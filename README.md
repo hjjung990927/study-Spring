@@ -125,269 +125,208 @@
 	7) application.yml		: Spring의 모든 설정 야멜
 
 
-#### 필드주입
+#### Qualifier
 
-	사용 방법이 매우 편하다는 장점이 있다.
-	주입된 객체를 불변(immutable)상태로 만들 수 없기 때문에 외부에서 수정될 위험이 있다.
-	순환 참조 발생시 Application 동작 시점과 Runtime 시점 중 필드주입은 RunTime 시점에 해당하기 때문에
-	메모리에 계속 할당되고 StackOverFlow가 발생했다. 하지만 2.6버전 이상부터는 Application 동작 시점에서 잡힌다.
-	단위테스트에서는 필드주입만 사용
-	생성자 -> 필드주입 -> 세터주입
+	@Autowired를 통해 객체를 주입할 때, 같은 타입의 객체가 여러 개 있다면 구분할 수 없다.
+   	이 때, @Qualifier를 통해 식별자를 설정하면 원하는 객체를 주입받을 수 있다.
+
 
 #### Spring MVC(Front-Controller Pattern)
 
-	MVC (Model-View-Controller) 아키텍처 패턴을 기반으로 하는 웹 개발
-	
 				HandlerMaping
-	REQUEST		  ①	      ②↕	   ③		       ④
-			  ↔	DispatcherServlet   ↔  HandlerAdapter   ↔  Controller
+	REQUEST		  ①	      ②↕	            ③		 ④
+		]	  ↔	DispatcherServlet   ↔  HandlerAdapter   ↔  Controller
 	RESPONSE	  ⑦	⑥↕	     ⑤↕
-			View	ViewResolver
-			   ↕
-			HTML 및 기타
+				View	ViewResolver
+				   ↕
+				HTML 및 기타
+
+		req(요청) -> Dispatcher Servlet <-> Handler Mapping(컨트롤러 경로 찾기) 후 보고
+		Dispatcher Servlet <-> Handler Adapter(리턴 값 보내줌 "/ex/ex01" ..) 후
+		Dispatcher Servlet <-> View Resolver(이동할 수 있는 경로 완성) 후 보고 
+		Dispatcher Servlet -> req (응답)
 
 
 #### Spring MVC 패턴의 특징
 
-	- HttpServletRequest, HttpServletResponse를 거의 사용할 필요 없이 구현 가능
-	- 다양한 타입의 파라미터 처리, 다양한 타입의 리턴 타입 사용 가능
-	- Get 방식, POST 방식 등 전송 방식에 대한 처리를 어노테이션으로 처리 가능
-	- 상속/인터페이스 방식 대신 어노테이션으로만 설정 가능
-
-
-#### 타임리프
-
-	'템플릿 엔진'의 일종. html 태그에 속성을 추가해 페이지에 동적으로 값을 추가하거나 처리할 수 있음
-	▶ html 태그에 속성 추가
-	<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-
-#### annotation 사용법
-```
-annotation
-	클래스와 메서드에 추가하여 다양한 기능을 부여하는 역할
-	Spring Framework는 해당 클래스가 어떤 역할인지 정함
-	Bean을 주입
-	자동으로 getter나 setter를 생성
-	특별한 의미를 부여하거나 기능 부여
-	
-	1. Bean 등록
-	2. 의존성 주입(Dependency Injection)
-	3.트랜잭션 관리
-	4. MVC 웹 애플리케이션 개발
-```
-
-#### ▶ Bean등록
-
-@Bean
-	Bean은 스프링 프레임워크에서 관리되는 객체를 의미
-	@Bean Annotation은 개발자가 제어가 불가능한 외부 라이브러리와 같은 것들을 Bean으로 만들 때 사용
-	스프링 컨테이너에 Bean으로 등록하기 위해
-	예) @Component, @Service, @Repository, @Controller
-
-
-#### ▶ 의존성 주입(Dependency Injection)
-
-	객체 간의 관계를 자동으로 설정하기 위해
-	@Autowired
-
-
-#### ▶ 트랜잭션 관리
-
-트랜잭션 
-	데이터베이스의 상태를 변경하는 일련의 작업을 하나의 논리적인 단위로 묶은 것.
-	이 작업들은 모두 성공적으로 수행되어야 하며, 그렇지 않을 경우 이전 상태로 롤백
-	@Transactional
-
-
-#### ▶ MVC 웹 애플리케이션 개발
-
-	스프링 MVC를 사용하여 웹 애플리케이션을 개발할 때 어노테이션을 활용
-	@Controller, @RequestMapping, @RequestParam, @ResponseBody 등의 어노테이션을 사용하여 요청을 처리하고 응답을 생성
-
-
-#### @Controller
-
-@Controller
-	Controller의 역할을 수행 한다고 명시(해당 클래스를 Controller로 사용한다고 Spring FrameWork에 알린다.)
-
-   	필요한 비즈니스 로직을 호출하여 전달할 모델(Model)과 이동할 뷰(View) 정보를 DispatherServlet에 반환 한다.
-
- 	- Bean으로 등록
-
- 	- @Component의 구체화 된 어노테이션
-	frontController처럼 쓸 수 있다.
-
-<img width="900" src="https://github.com/coder-juyeon/Spring/assets/122768623/efc551ae-b8a1-42c4-973d-2f2641e0103c">
-
-
-#### @RequestMapping
-
-	class와 Method를 같이 쓸때
-	예) @RequestMapping("/ex/")
-	공통적인 url을 설정해줌
-
-
-#### @ModelAttribute
-
-	@ModelAttribute("name")String name
-	html에서 jstl을 쓰기 위해
-	매개변수에 주기
-	예)
-	@GetMapping("ex04")
-	    public void ex04(String name, Model model) {
-		model.addAttribute("name", name);
-		log.info(name);
-	}
-
-	= (위와 아래가 같음)
-
-	@GetMapping("ex04")
-	    public void ex04(@ModelAttribute("name")String name) {
-		log.info(name);
-	}
-
-
-#### @RequestParam
-
-@RequestParam
-	1대1 매핑
-	화면에서 받을 파라미터 이름과 자바에서 받을 매개변수 이름이 다를때 사용한다.
-	예) 파라미터는 address(화면) 매개변수는 city면
-	    @RequestParam("address") String city
-    
-@RequestParam, @ModelAttribute의 차이점
-	modelAttribute은 파라미터를 객체 타입으로 받을 수 있지만
-	RequestParam은 1대1 매핑으로 파라미터에 데이터 하나만 가져올 수 있다.
-
-	예)
-	public class UserSearchForm() {
-		private int id;
-		private String name;
-		private String email;
-		private String phone;
-	}
-
-	@ModelAttribute의 경우
-	public String getTestPage(@ModelAttribute UserSearchForm userSearchForm){
-	}
-
-	@RequestParam의 경우
-	public String getTestPage(@RequestParam int id, @RequestParam String name, @RequestParam String email,@RequestParam String phone){
-	}
-
-
-#### Assertions.asertThat()
-
- 	친절한 오류 설명 및 빠른 단위 테스트 가능
- 	assertj꺼 쓰기
+	- HttpServletRequest, HttpServletResponse를 직접 사용한 것을 지양한다.
+	- 다양한 타입의 파라미터(매개변수) 처리, 다양한 타입의 리턴 타입 사용 가능
+	- GET 방식, POST 방식 등 전송 방식에 대한 처리를 어노테이션(@)으로 처리
+	- 상속/인터페이스 방식 대신 어노테이션(@)으로만 설정 가능
 
 
 #### REST
 
-	- Representational State Transfer
-	- 자원, 행위, 표현으로 구성되어 있다.
-	- 언제, 어디서든 누구든 서버에 요청을 보낼 때 URI만으로도 데이터 및 CRUD의 상태를 이해할 수 있도록 설계하는 규칙.
-	- HTTP에 존재하는 모든 자원에 고유한 URI를 부여하여 활용하는 것으로 자원을 정의하고 자원에 대한 주소를 지정하는 방법론
-	- JSON 혹은 XML을 통해 데이터를 주고 받는 것이 일반적 
-	- 네트워크 상에서 Client와 Server사이의 통신 방식 중 하나
-	- HTTP URL을 통해 자원을 명시하고 HTTP Method(POST, GET, PUT, DELETE)를 통해 해당 자원에 대한 CRUD Operation을 적용하는 것을 의미
-
-	* CRUD Operation
-	Create : 생성(POST)
-	Read : 조회(GET)
-	Update : 수정(PUT)
-	Delete : 삭제(DELETE)
-
-	* RESTful
-	-REST 방식을 따른 시스템
-
-	* RESTful API
-	-설계 방식이 모두 REST 규칙에 의해 작성된 API.
-
-
-#### 3-tier
-
-	3-tier
-	   스프링 프로젝트는 3-tier 방식으로 구성한다.
-
-	   ▶ Presentation Tier - 화면 계층
-	      화면에 보여주는 기술을 사용하는 영역
-
-	   ▶ Buisiness Tier - 비지니스 계층, 로직 계층
-	      순수한 비지니스 로직을 담고 있는 영역
-
-	   ▶ Persistence Tier - 영속 계층, 데이터 계층
-	      데이터를 어떤 방식으로 보관하고, 사용하는 가에 대한 설계가 들어가는 영역
-
-	3-tier의 목적
-		각 영역은 독립적으로 설계되어 
-		나중에 특정 기술이 변하더라도 필요한 부분을 전자제품의 부품처럼 쉽게 교환할 수 있게 하자는 방식이다.
-
-	3-tier의 구조
-		Presentation ↔ Business ↔ Persistence ↔ DBMS
-				↑      ↑         ↑
-			Controller   Service       Mapper
-
-#### REST URI 규칙
+	Representational State Transfer(데이터를 전송할 때 대표하는 상태)
+	
+	언제 어디서든 누구든 서버에 요청을 보낼 때
+	URI만으로도 데이터 또는 행위(CRUD) 상태를 이해할 수 있도록 설계하는 규칙
 
 	1. 소문자로 작성한다.
-		대문자로 작성시 문제가 발생할 수 있기 때문에 소문자로 작성한다.
+		대문자로 작성 시 문제가 발생할 수 있기 때문에 소문자로 작성한다.
 
 	2. 언더바 대신 하이픈을 사용한다.
 		가독성을 높이기 위해서 하이픈으로 구분하는 것이 좋다.
-
-	3. URI 마지막은 슬래시를 작성하지 않는다.	
-		마지막에 작성하는 슬래시는 의미가 없다.		
+		
+	3. URI 마지막에 슬래시를 작성하지 않는다.
+		마지막에 작성하는 슬래시는 의미가 없다.
 
 	4. 계층 관계 표현 시 슬래시 구분자로 사용한다.
 		계층 관계(포함 관계)에서는 슬래시로 구분해준다.
 
-	5. 동사는 작성하면 안된다.
-		행위는 URI로 표현하지 않고 HTTP METHOD를 통해 전달한다.
-	
-	6. 파일 확장자는 포함시키지 않는다.
+	5. 파일 확장자는 포함시키지 않는다.
 		파일 확장자는 URI로 표현하지 않고 Header의 Content-Type을 사용하여
 		body의 내용을 처리하도록 설계한다.
 
-	7. 데이터를 대표할 때에는 명사를 사용하지만, 상태를 대표할 때에는 동사를 허용한다.
-		http://www.app.com/writing (X)
-		http://www.app.com/write (O)		
+	6. 데이터를 대표할 때에는 명사를 사용하고, 상태를 대표할 때에는 동사를 사용한다.
+		http://www.app.com/members/get/1 (X)
+		http://www.app.com/members/delete/1 (O)
 
-	8. URI에 사용되는 영어단어는 복수로 작성한다.
-
-
-
-#### AOP(Aspect Oriented Programming)
-
-	기존 코드와 부가 기능 코드를 따로 정의한 뒤 다시 합쳐서 모듈로 만드는 것이다.
-	코드의 중복을 줄일 수 있으며, 핵심 로직과 주변 로직을 분리하여 관리할 수 있다.
-	핵심 로직은 아니지만 반복적으로 개발에 필요한 관심사들을 주변 로직이라고 한다.
-	따라서 AOP는 이러한 주변 로직을 횡단 관심사로 분리하여 작성하고 종단 관심사인
-	핵심 비지니스 로직만을 해당 서버에서 작성하도록 한다.
-
-	예) 나눗셈 프로그램 개발 시 두 개의 숫자를 나누는 것(핵심, 종단)
-	0으로 나누는 지 검사하는 것(주변, 횡단)
-
-	즉, 반복적으로 나타나는 횡단 관심사를 모듈로 분리한 후 적절한 시점에 로직을 주입하는 것이 AOP이다.
-	스프링에서는 별도의 복잡한 설명 없이 간편하게 AOP의 기능들을 구현할 수 있기 때문에 중요한 특징 중 하나이다.
-
-#### AOP를 사용할 수 있는 시점
-
-	- Around(전 구역)
-	- Before(메소드 시작 직후)
-	- After(메소드 종료 직전)
-	- AfterReturning(메소드 리턴 후)
-	- AfterThrowing(메소드 예외 발생 후)
+	7. URI에 사용되는 영어 단어는 복수로 작성한다.
 
 
-#### AOP 설계 순서
+#### 3-tier(층)
 
-	1. 구현할 횡단 관심사를 의미할 수 있는 어노테이션 만들기
-	2. 어노테이션을 Aspect로 등록하기
-	3. 종단 관심사에 등록된 어노테이션 사용하기
+	스프링 프로젝트는 3-tier 방식으로 설계된다.
+
+   	▶ Presentation Tier - 화면 계층
+      		화면에 보여주는 기술을 사용하는 영역(Controller)
+
+   	▶ Business Tier - 비지니스 계층
+      		순수한 비지니스 로직을 담고 있는 영역(Service)
+
+   	▶ Persistence Tier - 영속 계층
+      		데이터를 어떤 방식으로 보관하고, 사용하는가에 대한 설계가 들어가는 영역(Mapper)
+
+	※ Controller -> Service -> DAO -> Mapper
 
 
+#### 3-tier의 목적
+
+	각 영역은 독립적으로 설계되어 나중에 특정 기술이 변하더라도 필요한 부분을
+   	부품처럼 쉽게 교환(모듈화)할 수 있게 하자는 방식이다.
+
+#### 3-tier의 구조
+
+	Presentation ↔ Business ↔ Persistence ↔ DBMS
+        	↑                ↑       	     ↑             ↑
+   	 Controller          Service      Repository    Mapper
+
+
+#### @Controller(페이지 이동용)	
+
+	- 반환값이 문자열 -> 뷰 이름으로 인식
+	- 브라우저가 HTML 페이지로 이동
+	- 주로 웹 화면을 보여줄 때 사용
+
+
+#### @REST Controller(데이터 제공용)
+
+	- 반환값을 뷰가 아니라 그대로 데이터(JSON 등)로 응답
+	- 클라이언트 프로그램이 데이터를 받음
+	- 페이지 이동 x, 데이터만 주고 받는 API 방식
+
+
+#### @GetMapping
+
+	- 데이터를 조회할 때 사용
+	- ex) 웹페이지 열기, 데이터 가져오기
+	- 브라우저에서 URL에 직접 입력하거나 링크 클릭 시 호출
+	- URL에 데이터를 붙여서 보낼 수 있음
+
+
+#### @PostMapping
+
+	- 데이터를 서버로 전송할 때 사용
+	- ex) 회원가입, 게시글 작성
+	- URL에 데이터를 안보여주고 서버로 보낼 수 있음
+
+
+#### @RequestParam
+
+	(1) 	@GetMapping("/greet")
+		public String greet(@RequestParam String name) {
+    		return name + "님, 안녕하세요!";
+		}
+
+		브라우저 요청: GET /greet?name=희준
+		스프링이 name=희준을 읽어서 메서드의 name 변수에 넣음
+		결과: "희준님, 안녕하세요!"
+
+	(2)	@GetMapping("/greet")
+		public String greet(@RequestParam("name") String username) {
+    		return username + "님, 안녕하세요!";
+		}
+
+		?name=희준 → username 변수에 들어감
+
+	(3) 	@GetMapping("/greet")
+		public String greet(
+    		@RequestParam(value="name", required=false, defaultValue="손님") String username{
+    		return username + "님, 안녕하세요!";
+		}
+
+		required=false → 값 없어도 오류 안 남
+		defaultValue="손님" → 값 없으면 "손님"으로 처리
+
+
+#### @PathVariable
+
+	- URL 경로 안에 있는 값을 가져올 때 사용
+	- ex) /users/3 → 3이라는 사용자 id 가져오기
+	@GetMapping("/users/{id}")
+	public String getUser(@PathVariable Long id) {
+    	return id + "번 사용자 조회";
+	}
+	URL의 {} 안 이름과 변수명을 맞춰야 함
+
+
+#### @RequestBody
+
+	- body 전체를 읽어 객체로 변환, 주로 JSON 데이터를 받을 때 사용
+	- ex) {"name":"희준","age":28}
+	@PostMapping("/users")
+	public String createUser(@RequestBody UserDTO user) {
+    	return user.getName() + "님 등록 완료";
+	}
+
+	클라이언트가 {"name":"희준","age":28} 보내면
+	→ UserDTO 객체로 매핑
+
+
+#### HttpServletRequest request
+
+	- 클라이언트가 보낸 요청 정보 가져올 때 사용
+	- ex) URL, 쿼리 파라미터 확인, 세션 가져오기, 클라이언트 IP 확인	
+	@PostMapping("/login")
+	public String login(HttpServletRequest request) {
+    		String clientIp = request.getRemoteAddr(); // 클라이언트 IP
+    		String path = request.getRequestURI();     // 요청 URL
+    		return "IP: " + clientIp + ", 요청 URL: " + path;
+	}
+
+	request.getParameter("name") → GET/POST 파라미터 가져오기
+	request.getSession() → 세션 가져오기/저장
+
+
+#### HttpServletResponse response
+
+	- 서버가 클라이언트에게 응답을 보낼 때 조작
+	- ex) 쿠키 추가/삭제, 직접 데이터 출력
+	@PostMapping("/login")
+	public String login(HttpServletResponse response) {
+    		// 쿠키 생성
+    		Cookie cookie = new Cookie("user", "희준");
+    		cookie.setMaxAge(60*60); // 1시간
+    		response.addCookie(cookie);
+
+    		// 상태 코드 설정
+    		response.setStatus(HttpServletResponse.SC_OK);
+
+    		return "쿠키 생성 완료!";
+	}
+
+	
 #### Spring Security
 
 	Spring 기반 애플리케이션의 보안을 담당하는 프레임워크로서
@@ -437,6 +376,30 @@ annotation
 	4. JWT 검증: 서버가 JWT 유효성 검증 후 인증 처리
 	5. 정보 접근: 인증된 사용자만 정보 접근 허용
 
-<img width="900" src ="https://github.com/coder-juyeon/Spring/assets/122768623/2cea959c-d094-4328-aa52-97b58ce4e58b">
 
+#### JWT Provider
+
+	- 생성, 삭제, 검사 등 기능이 모아져 있는 클래스
+
+	
+#### JWT AuthenticationHandler
+
+	- 인증에 실패했을 때
+
+	
+#### JWT AuthorizationHandler
+
+	- 인가에 실패했을 때
+
+	
+#### JWT Filter
+
+	- 모든 요청을 관리하는 곳
+
+	
+#### SecurityConfig
+
+	- 모든 인증과 인가 흐름 설정
+
+	
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
