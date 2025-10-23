@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 경로 확인 꼭 하기 -->
+<mapper namespace="com.example.mysql.mapper.PostMapper">
+    <!-- 게시글 추가 -->
+    <insert id="addPost">
+        insert into tbl_post (post_title, post_content, member_id)
+        values (#{postTitle}, #{postContent}, #{memberId})
+    </insert>
+
+    <!-- 게시글 조회 -->
+    <select id="selectById">
+        select m.member_name, p.id, p.post_title, p.post_content, p.post_read_count, p.member_id, p.created_date, p.updated_date
+        from tbl_member m join tbl_post p
+        on m.id = p.member_id and p.id = #{id}
+    </select>
+
+    <!-- 게시글 수정 -->
+    <update id="updatePost">
+        update tbl_post
+        set post_content = #{postContent}
+        where member_id = #{memberId}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <delete id="deletePost">
+        delete from tbl_post
+        where member_id = #{memberId}
+    </delete>
+
+    <!-- 게시글 목록 -->
+    <select id="findAllPost">
+        select m.member_name, p.id, p.post_title, p.post_content, p.post_read_count, p.member_id, p.created_date, p.updated_date
+        from tbl_member m join tbl_post p
+        on m.id = p.member_id
+    </select>
+</mapper>

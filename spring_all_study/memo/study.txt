@@ -1,0 +1,121 @@
+Controller(페이지 이동용)
+	- 반환값이 문자열 -> 뷰 이름으로 인식
+	- 브라우저가 HTML 페이지로 이동
+	- 주로 웹 화면을 보여줄 때 사용
+
+Rest Controller(데이터 제공용)
+	- 반환값을 뷰가 아니라 그대로 데이터(JSON 등)로 응답
+	- 클라이언트 프로그램이 데이터를 받음
+	- 페이지 이동 x, 데이터만 주고 받는 API 방식
+
+@GetMapping
+	- 데이터를 조회할 때 사용
+	- ex) 웹페이지 열기, 데이터 가져오기
+	- 브라우저에서 URL에 직접 입력하거나 링크 클릭 시 호출
+	- URL에 데이터를 붙여서 보낼 수 있음
+
+@PostMapping
+	- 데이터를 서버로 전송할 때 사용
+	- ex) 회원가입, 게시글 작성
+	- URL에 데이터를 안보여주고 서버로 보낼 수 있음
+
+@RequestParam
+	(1) 	@GetMapping("/greet")
+		public String greet(@RequestParam String name) {
+    		return name + "님, 안녕하세요!";
+		}
+
+		브라우저 요청: GET /greet?name=희준
+		스프링이 name=희준을 읽어서 메서드의 name 변수에 넣음
+		결과: "희준님, 안녕하세요!"
+
+	(2)	@GetMapping("/greet")
+		public String greet(@RequestParam("name") String username) {
+    		return username + "님, 안녕하세요!";
+		}
+
+		?name=희준 → username 변수에 들어감
+
+	(3) 	@GetMapping("/greet")
+		public String greet(
+    		@RequestParam(value="name", required=false, defaultValue="손님") String username{
+    		return username + "님, 안녕하세요!";
+		}
+
+		required=false → 값 없어도 오류 안 남
+		defaultValue="손님" → 값 없으면 "손님"으로 처리
+
+@PathVariable
+	- URL 경로 안에 있는 값을 가져올 때 사용
+	- ex) /users/3 → 3이라는 사용자 id 가져오기
+	@GetMapping("/users/{id}")
+	public String getUser(@PathVariable Long id) {
+    	return id + "번 사용자 조회";
+	}
+	URL의 {} 안 이름과 변수명을 맞춰야 함
+
+@RequestBody
+	- body 전체를 읽어 객체로 변환, 주로 JSON 데이터를 받을 때 사용
+	- ex) {"name":"희준","age":28}
+	@PostMapping("/users")
+	public String createUser(@RequestBody UserDTO user) {
+    	return user.getName() + "님 등록 완료";
+	}
+
+	클라이언트가 {"name":"희준","age":28} 보내면
+	→ UserDTO 객체로 매핑
+
+======================================================
+HttpServletRequest request
+	- 클라이언트가 보낸 요청 정보 가져올 때 사용
+	- ex) URL, 쿼리 파라미터 확인, 세션 가져오기, 클라이언트 IP 확인	
+	@PostMapping("/login")
+	public String login(HttpServletRequest request) {
+    		String clientIp = request.getRemoteAddr(); // 클라이언트 IP
+    		String path = request.getRequestURI();     // 요청 URL
+    		return "IP: " + clientIp + ", 요청 URL: " + path;
+	}
+
+	request.getParameter("name") → GET/POST 파라미터 가져오기
+	request.getSession() → 세션 가져오기/저장
+
+HttpServletResponse response
+	- 서버가 클라이언트에게 응답을 보낼 때 조작
+	- ex) 쿠키 추가/삭제, 직접 데이터 출력
+	@PostMapping("/login")
+	public String login(HttpServletResponse response) {
+    		// 쿠키 생성
+    		Cookie cookie = new Cookie("user", "희준");
+    		cookie.setMaxAge(60*60); // 1시간
+    		response.addCookie(cookie);
+
+    		// 상태 코드 설정
+    		response.setStatus(HttpServletResponse.SC_OK);
+
+    		return "쿠키 생성 완료!";
+	}
+
+=====================================================
+Spring Security
+
+JWT Provider
+	- 생성, 삭제, 검사 등 기능이 모아져 있는 클래스
+JWT AuthenticationHandler
+	- 인증에 실패했을 때
+JWT AuthorizationHandler
+	- 인가에 실패했을 때
+JWT Filter
+	- 모든 요청을 관리하는 곳
+SecurityConfig
+	- 모든 인증과 인가 흐름 설정
+
+
+
+
+
+
+
+
+
+
+
