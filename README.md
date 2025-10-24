@@ -401,5 +401,23 @@
 
 	- 모든 인증과 인가 흐름 설정
 
+
+#### Cache
+
+	- 메모리에 저장해 빠르게 데이터를 갖고 옴
+
+
+#### Caching 
+
+	- 반복되는 쿼리문을 나가지 않게 하기 위해 사용
+
+
+#### Transcation
+
+	- 1개의 서비스에 필요한 여러 SQL문의 묶음
+
+
+
+
 	
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
